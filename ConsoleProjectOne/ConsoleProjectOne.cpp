@@ -6,6 +6,8 @@
 #include <iostream>
 #include <conio.h>
 
+#define MAX_POINTER_SIZE 6
+
 #define CANVAS_X 79
 #define CANVAS_Y 24
 
@@ -43,7 +45,7 @@ pointer start_page()
 		"*  You can change POINTER's size with '+' and '-' keys.                       *\n"
 		"*                                                                             *\n"
 		"*  But first you have to chose ASCII symbol to draw POINTER with.             *\n"
-		"*                           And it's initial size from range <1; 4>.          *\n"
+		"*                           And it's initial size from range <1; 6>.          *\n"
 		"*                                                                             *\n"
 		"*                                                    PRG1 - Project nr 69     *\n"
 		"*                                                    Marcin Kruzewski s13927  *\n"
@@ -117,6 +119,32 @@ void draw_display(pointer pointer, position position)
 		display[position.x - 2][position.y + 3] = '\\';
 		display[position.x - 3][position.y + 2] = '\\';
 		display[position.x - 4][position.y + 1] = '\\';
+		break;
+	case 5:
+		display[position.x - 1][position.y + 1] = '/';
+		display[position.x - 2][position.y + 2] = '/';
+		display[position.x - 3][position.y + 3] = 'X';
+		display[position.x - 4][position.y + 4] = '/';
+		display[position.x - 5][position.y + 5] = '/';
+		display[position.x - 1][position.y + 5] = '\\';
+		display[position.x - 2][position.y + 4] = '\\';
+		display[position.x - 4][position.y + 2] = '\\';
+		display[position.x - 5][position.y + 1] = '\\';
+		break;
+	case 6:
+		display[position.x - 1][position.y + 1] = '/';
+		display[position.x - 2][position.y + 2] = '/';
+		display[position.x - 3][position.y + 3] = '/';
+		display[position.x - 4][position.y + 4] = '/';
+		display[position.x - 5][position.y + 5] = '/';
+		display[position.x - 6][position.y + 6] = '/';
+		display[position.x - 1][position.y + 6] = '\\';
+		display[position.x - 2][position.y + 5] = '\\';
+		display[position.x - 3][position.y + 4] = '\\';
+		display[position.x - 4][position.y + 3] = '\\';
+		display[position.x - 5][position.y + 2] = '\\';
+		display[position.x - 6][position.y + 1] = '\\';
+		break;
 	default:
 		break;
 	}
@@ -136,6 +164,36 @@ position move_down(position position, int size)
 	return position;
 }
 
+position move_left(position position, int size)
+{
+	if (position.x > 1 + size) position.x--;
+	return position;
+}
+
+position move_right(position position)
+{
+	if (position.x < CANVAS_X - 2) position.x++;
+	return position;
+}
+
+pointer size_down(pointer pointer)
+{
+	if (pointer.pointer_size > 1) pointer.pointer_size--;
+	return pointer;
+}
+
+pointer size_up(pointer pointer, position position)
+{
+	if (position.x > 1 + pointer.pointer_size)
+	{
+		if (position.y < CANVAS_Y - pointer.pointer_size - 2)
+		{
+			if (pointer.pointer_size < MAX_POINTER_SIZE) pointer.pointer_size++;
+		}
+	}
+	return pointer;
+}
+
 void keybord_listener(position position, pointer pointer)
 {
 	char pressed_key = '\0';
@@ -151,6 +209,18 @@ void keybord_listener(position position, pointer pointer)
 			break;
 		case KEY_DOWN:
 			position = move_down(position, pointer.pointer_size);
+			break;
+		case KEY_RIGHT:
+			position = move_right(position);
+			break;
+		case KEY_LEFT:
+			position = move_left(position, pointer.pointer_size);
+			break;
+		case KEY_MINUS:
+			pointer = size_down(pointer);
+			break;
+		case KEY_PLUS:
+			pointer = size_up(pointer, position);
 			break;
 		case KEY_ESC:
 			continuation = false;
@@ -169,4 +239,3 @@ int main()
 	keybord_listener(position, pointer);
 	return 0;
 }
-
